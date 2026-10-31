@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cadence — Speak better by actually speaking</title>
+<meta name="description" content="Cadence is a speaking-practice tool: a random topic wheel, voice warm-ups, tongue twisters and short daily sessions. No account needed." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --paper:#E9E4D8;
+  --paper-2:#DFD9C9;
+  --ink:#201C16;
+  --ink-soft:#4A453C;
+  --ink-faint:#8B8477;
+  --line:rgba(32,28,22,0.14);
+  --line-strong:rgba(32,28,22,0.28);
+  --brass:#B07F2E;
+  --brass-deep:#8C6423;
+  --brass-tint:#EAD9B4;
+  --teal:#3F6A63;
+  --teal-tint:#DCE6E3;
+  --surface:#F2EEE3;
+  --surface-raised:#FBF9F2;
+  --danger:#95402E;
+  --radius-s:3px;
+  --radius-m:6px;
+  --shadow-1: 0 1px 2px rgba(32,28,22,0.06);
+  --shadow-2: 0 6px 20px rgba(32,28,22,0.12);
+  --font-display:'Fraunces', serif;
+  --font-ui:'Manrope', sans-serif;
+  --measure: 62ch;
+  color-scheme: light;
+}
+:root[data-theme="studio"]{
+  --paper:#15181C;
+  --paper-2:#1B1F24;
+  --ink:#ECE7DD;
+  --ink-soft:#B9B2A3;
+  --ink-faint:#726C60;
+  --line:rgba(236,231,221,0.12);
+  --line-strong:rgba(236,231,221,0.24);
+  --brass:#D6A64B;
+  --brass-deep:#F0C878;
+  --brass-tint:#3A2F1B;
+  --teal:#7FADA3;
+  --teal-tint:#1E2C29;
+  --surface:#1D2126;
+  --surface-raised:#232830;
+  --danger:#D98E7A;
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-2: 0 10px 30px rgba(0,0,0,0.45);
+  color-scheme: dark;
+}
+
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-ui);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s ease, color .25s ease;
+}
+img,svg{ display:block; max-width:100%; }
+button{ font-family:inherit; }
+a{ color:inherit; }
+h1,h2,h3,h4{ font-family:var(--font-display); margin:0; font-weight:600; letter-spacing:-0.01em; }
+p{ margin:0; }
+button{ cursor:pointer; }
+:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; border-radius:2px; }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+}
+
+.visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+.shell{ max-width:1160px; margin:0 auto; padding:0 20px; }
+@media (min-width:768px){ .shell{ padding:0 40px; } }
+@media (min-width:1180px){ .shell{ padding:0 24px; } }
+
+.page{ display:none; }
+.page.is-active{ display:block; }
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.topnav{
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topnav-row{
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px;
+}
+.brand{
+  font-family:var(--font-display); font-weight:600; font-size:1.28rem;
+  display:flex; align-items:baseline; gap:8px; background:none; border:none; padding:0; color:var(--ink);
+}
+.brand-mark{
+  width:9px; height:9px; border-radius:50%; background:var(--brass); display:inline-block; transform:translateY(-2px);
+}
+.nav-links{ display:none; gap:28px; align-items:center; }
+.nav-links button{
+  background:none; border:none; color:var(--ink-soft); font-size:0.95rem; font-weight:600;
+  padding:6px 2px; position:relative;
+}
+.nav-links button.is-current{ color:var(--ink); }
+.nav-links button.is-current::after{
+  content:""; position:absolute; left:0; right:0; bottom:-3px; height:2px; background:var(--brass);
+}
+@media (min-width:860px){ .nav-links{ display:flex; } }
+
+.nav-right{ display:flex; align-items:center; gap:10px; }
+.theme-toggle{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--line-strong);
+  background:var(--surface); display:flex; align-items:center; justify-content:center;
+}
+.theme-toggle svg{ width:16px; height:16px; stroke:var(--ink); fill:none; stroke-width:1.6; }
+.menu-btn{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--line-strong); background:var(--surface);
+  display:flex; align-items:center; justify-content:center;
+}
+@media (min-width:860px){ .menu-btn{ display:none; } }
+.menu-btn svg{ width:17px; height:17px; stroke:var(--ink); fill:none; stroke-width:1.7; }
+
+.mobile-menu{
+  display:none; flex-direction:column; gap:2px;
+  border-bottom:1px solid var(--line); background:var(--paper);
+  padding:6px 20px 14px;
+}
+.mobile-menu.is-open{ display:flex; }
+.mobile-menu button{
+  text-align:left; background:none; border:none; padding:12px 4px; font-size:1.02rem; font-weight:600;
+  color:var(--ink-soft); border-bottom:1px solid var(--line); min-height:44px;
+}
+.mobile-menu button.is-current{ color:var(--brass-deep); }
+@media (min-width:860px){ .mobile-menu{ display:none !important; } }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:var(--font-ui); font-weight:700; font-size:0.95rem;
+  padding:13px 22px; border-radius:var(--radius-s); border:1px solid transparent;
+  min-height:44px; line-height:1; transition:transform .15s ease, background .15s ease, border-color .15s ease;
+  white-space:nowrap;
+}
+.btn:active{ transform:translateY(1px); }
+.btn-primary{ background:var(--ink); color:var(--paper); }
+:root[data-theme="studio"] .btn-primary{ background:var(--brass); color:#15181C; }
+.btn-primary:hover{ background:var(--brass-deep); color:#fff; }
+:root[data-theme="studio"] .btn-primary:hover{ background:var(--brass-deep); color:#15181C; }
+.btn-outline{ background:transparent; border-color:var(--line-strong); color:var(--ink); }
+.btn-outline:hover{ border-color:var(--ink); }
+.btn-ghost{ background:transparent; color:var(--ink-soft); padding:13px 10px; }
+.btn-ghost:hover{ color:var(--ink); }
+.btn-sm{ padding:9px 16px; font-size:0.85rem; min-height:38px; }
+.btn-block{ width:100%; }
+.btn[disabled]{ opacity:0.45; cursor:not-allowed; transform:none; }
+
+/* ============================================================
+   TYPE UTILITIES
+   ============================================================ */
+.eyebrow{
+  font-family:var(--font-ui); font-weight:700; font-size:0.78rem; letter-spacing:0.02em;
+  color:var(--brass-deep);
+}
+:root[data-theme="studio"] .eyebrow{ color:var(--brass); }
+.section-head{ max-width:var(--measure); margin-bottom:28px; }
+.section-head h2{ font-size:clamp(1.7rem, 4.4vw, 2.5rem); margin-top:8px; line-height:1.1; }
+.section-head p{ color:var(--ink-soft); margin-top:12px; font-size:1.03rem; max-width:56ch; }
+.section{ padding:64px 0; border-top:1px solid var(--line); }
+.section:first-of-type{ border-top:none; }
+.tiny{ font-size:0.82rem; color:var(--ink-faint); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{ padding:44px 0 56px; }
+.hero-kicker{
+  display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:700;
+  color:var(--ink-soft); border:1px solid var(--line-strong); border-radius:99px; padding:6px 12px 6px 10px;
+  margin-bottom:22px;
+}
+.hero-kicker .dot{ width:6px; height:6px; border-radius:50%; background:var(--brass); }
+.hero h1{
+  font-size:clamp(2.3rem, 7vw, 4rem); line-height:1.02; max-width:16ch;
+  font-weight:600;
+}
+.hero h1 em{ font-style:italic; font-weight:400; color:var(--brass-deep); }
+:root[data-theme="studio"] .hero h1 em{ color:var(--brass); }
+.hero-sub{ margin-top:22px; font-size:1.12rem; color:var(--ink-soft); max-width:46ch; line-height:1.55; }
+.hero-actions{ display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
+
+/* ============================================================
+   WHEEL SECTION
+   ============================================================ */
+.wheel-section{ padding-top:12px; }
+.wheel-layout{
+  display:grid; gap:40px; align-items:center;
+}
+@media (min-width:900px){
+  .wheel-layout{ grid-template-columns: 1fr 1fr; gap:56px; }
+}
+.wheel-copy .section-head{ margin-bottom:22px; }
+.wheel-legend{ display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:26px; }
+.wheel-legend-item{ display:flex; align-items:center; gap:7px; font-size:0.82rem; color:var(--ink-soft); }
+.wheel-legend-swatch{ width:9px; height:9px; border-radius:2px; }
+
+.dial-wrap{
+  position:relative; width:100%; max-width:420px; margin:0 auto; aspect-ratio:1/1;
+}
+.dial-ring-labels{ position:absolute; inset:0; }
+.dial-ring-labels span{
+  position:absolute; font-size:0.72rem; font-weight:700; letter-spacing:0.01em; color:var(--ink-soft);
+  transform:translate(-50%,-50%); text-align:center; width:74px; line-height:1.15;
+}
+.dial-outer{
+  position:absolute; left:50%; top:50%; width:74%; height:74%; transform:translate(-50%,-50%);
+  border-radius:50%; padding:10px;
+  background:var(--surface-raised); box-shadow:var(--shadow-2);
+  border:1px solid var(--line);
+}
+.dial-face{
+  position:relative; width:100%; height:100%; border-radius:50%; overflow:hidden;
+  transition:transform 3.6s cubic-bezier(.12,.72,.1,1);
+}
+.dial-face svg{ width:100%; height:100%; display:block; }
+.dial-pointer{
+  position:absolute; top:-2px; left:50%; transform:translateX(-50%);
+  width:0; height:0; border-left:9px solid transparent; border-right:9px solid transparent;
+  border-top:16px solid var(--brass); z-index:5; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));
+}
+.dial-hub{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:23%; height:23%; border-radius:50%; background:var(--paper); border:2px solid var(--brass);
+  display:flex; align-items:center; justify-content:center; z-index:6; box-shadow:var(--shadow-1);
+}
+#spinBtn{
+  width:100%; height:100%; border-radius:50%; border:none; background:transparent;
+  font-family:var(--font-ui); font-weight:800; font-size:0.85rem; letter-spacing:0.03em; color:var(--ink);
+}
+#spinBtn:disabled{ opacity:0.5; }
+
+/* ============================================================
+   RESULT CARD
+   ============================================================ */
+.result-panel{
+  margin-top:26px; border:1px solid var(--line); border-radius:var(--radius-m);
+  background:var(--surface); padding:26px; display:none;
+}
+.result-panel.is-visible{ display:block; }
+.result-label{ font-size:0.75rem; font-weight:800; letter-spacing:0.06em; color:var(--ink-faint); text-transform:uppercase; }
+.result-topic{
+  font-family:var(--font-display); font-size:clamp(1.35rem,3vw,1.75rem); line-height:1.3; margin-top:10px;
+  font-style:italic; font-weight:500;
+}
+.result-challenge{ margin-top:14px; padding-top:14px; border-top:1px dashed var(--line-strong); font-size:0.98rem; color:var(--ink-soft); }
+.result-challenge b{ color:var(--ink); }
+.result-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+
+/* ============================================================
+   QUICK MODES
+   ============================================================ */
+.mode-grid{ display:grid; gap:14px; grid-template-columns:1fr; }
+@media (min-width:640px){ .mode-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (min-width:1000px){ .mode-grid{ grid-template-columns:repeat(5,1fr); } }
+.mode-card{
+  text-align:left; border:1px solid var(--line); border-radius:var(--radius-m); background:var(--surface);
+  padding:18px; display:flex; flex-direction:column; gap:6px; min-height:118px;
+}
+.mode-card:hover{ border-color:var(--line-strong); }
+.mode-card .mode-name{ font-weight:800; font-size:0.98rem; }
+.mode-card .mode-desc{ font-size:0.85rem; color:var(--ink-soft); line-height:1.4; }
+.mode-card .mode-tick{ margin-top:auto; font-size:0.76rem; color:var(--brass-deep); font-weight:700; }
+:root[data-theme="studio"] .mode-card .mode-tick{ color:var(--brass); }
+
+/* ============================================================
+   VOICE TEASER / TWISTER TEASER (home)
+   ============================================================ */
+.split-feature{
+  display:grid; gap:28px; align-items:start;
+}
+@media (min-width:820px){ .split-feature{ grid-template-columns:1.1fr 1fr; gap:48px; align-items:center; } }
+.feature-copy h2{ font-size:clamp(1.6rem,4vw,2.2rem); margin-top:8px; }
+.feature-copy p{ margin-top:14px; color:var(--ink-soft); max-width:48ch; }
+.feature-copy .btn{ margin-top:22px; }
+.exercise-preview-list{ display:flex; flex-direction:column; gap:10px; }
+.chip-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.chip{
+  font-size:0.78rem; font-weight:700; border:1px solid var(--line-strong); border-radius:99px;
+  padding:6px 12px; color:var(--ink-soft); background:var(--surface);
+}
+
+/* ============================================================
+   COMPACT PREVIEW CARD (used for voice/twister mini previews on home)
+   ============================================================ */
+.mini-card-stack{ display:flex; flex-direction:column; gap:10px; }
+.mini-card{
+  border:1px solid var(--line); border-radius:var(--radius-m); background:var(--surface);
+  padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:14px;
+}
+.mini-card-title{ font-weight:700; font-size:0.98rem; }
+.mini-card-sub{ font-size:0.8rem; color:var(--ink-faint); margin-top:2px; }
+
+/* ============================================================
+   DAILY PRACTICE
+   ============================================================ */
+.daily-list{ list-style:none; margin:22px 0 0; padding:0; display:flex; flex-direction:column; gap:0; border-top:1px solid var(--line); }
+.daily-item{
+  display:flex; align-items:baseline; gap:16px; padding:16px 0; border-bottom:1px solid var(--line);
+}
+.daily-num{ font-family:var(--font-display); font-style:italic; color:var(--brass-deep); font-size:1.1rem; width:28px; flex-shrink:0; }
+:root[data-theme="studio"] .daily-num{ color:var(--brass); }
+.daily-body{ flex:1; }
+.daily-name{ font-weight:700; }
+.daily-time{ font-size:0.82rem; color:var(--ink-faint); margin-top:2px; }
+
+/* ============================================================
+   FILLER CHALLENGE
+   ============================================================ */
+.filler-words{ display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+.filler-words span{
+  font-family:var(--font-display); font-style:italic; font-size:0.95rem; color:var(--ink-soft);
+  border-bottom:2px solid var(--danger); padding-bottom:1px;
+}
+
+/* ============================================================
+   CHANNELS (home teaser grid + full page)
+   ============================================================ */
+.channel-grid{ display:grid; gap:16px; grid-template-columns:1fr; }
+@media (min-width:640px){ .channel-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (min-width:1020px){ .channel-grid{ grid-template-columns:repeat(3,1fr); } }
+.channel-card{
+  border:1px solid var(--line); border-radius:var(--radius-m); background:var(--surface); padding:20px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.channel-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.channel-name{ font-weight:800; font-size:1.02rem; }
+.channel-cat{ font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--brass-deep); background:var(--brass-tint); border-radius:99px; padding:4px 9px; white-space:nowrap; }
+:root[data-theme="studio"] .channel-cat{ color:var(--brass); }
+.channel-desc{ font-size:0.88rem; color:var(--ink-soft); line-height:1.5; }
+.channel-why{ font-size:0.8rem; color:var(--ink-faint); font-style:italic; }
+.channel-link{ margin-top:auto; font-weight:700; font-size:0.85rem; color:var(--ink); display:inline-flex; align-items:center; gap:6px; }
+.channel-link svg{ width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; }
+
+/* ============================================================
+   VOCAB / WORD OF THE DAY
+   ============================================================ */
+.word-card{
+  border:1px solid var(--line); border-radius:var(--radius-m); background:var(--surface); padding:28px;
+  max-width:560px;
+}
+.word-headline{ font-family:var(--font-display); font-size:2rem; font-weight:600; }
+.word-meaning{ margin-top:8px; color:var(--ink-soft); }
+.word-example{ margin-top:14px; font-style:italic; color:var(--ink-soft); font-family:var(--font-display); font-size:1.05rem; }
+.word-challenge{ margin-top:16px; padding-top:16px; border-top:1px dashed var(--line-strong); font-size:0.92rem; }
+.word-challenge b{ color:var(--brass-deep); }
+:root[data-theme="studio"] .word-challenge b{ color:var(--brass); }
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+.progress-grid{ display:grid; gap:14px; grid-template-columns:repeat(2,1fr); }
+@media (min-width:640px){ .progress-grid{ grid-template-columns:repeat(4,1fr); } }
+.progress-stat{ border:1px solid var(--line); border-radius:var(--radius-m); padding:18px; background:var(--surface); }
+.progress-num{ font-family:var(--font-display); font-size:1.9rem; font-weight:600; }
+.progress-label{ font-size:0.8rem; color:var(--ink-soft); margin-top:4px; }
+.progress-note{ margin-top:18px; font-size:0.85rem; color:var(--ink-faint); }
+.progress-reset{ margin-top:18px; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{ border-top:1px solid var(--line); padding:52px 0 40px; margin-top:20px; }
+.footer-grid{ display:grid; gap:32px; grid-template-columns:1fr; }
+@media (min-width:720px){ .footer-grid{ grid-template-columns:1.4fr 1fr 1fr 1fr; } }
+.footer-brand p{ margin-top:12px; color:var(--ink-soft); max-width:32ch; font-size:0.9rem; }
+.footer-col h4{ font-family:var(--font-ui); font-size:0.78rem; font-weight:800; letter-spacing:0.05em; color:var(--ink-faint); margin-bottom:12px; }
+.footer-col button, .footer-col a{ display:block; background:none; border:none; padding:6px 0; text-align:left; color:var(--ink-soft); font-size:0.9rem; font-family:inherit; }
+.footer-col button:hover{ color:var(--ink); }
+.footer-bottom{ margin-top:40px; padding-top:20px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between; font-size:0.82rem; color:var(--ink-faint); }
+
+/* ============================================================
+   SUBPAGE HEADER (voice / twisters / channels pages)
+   ============================================================ */
+.subpage-hero{ padding:36px 0 8px; }
+.back-link{
+  display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:0.88rem; color:var(--ink-soft);
+  background:none; border:none; padding:8px 0; margin-bottom:16px;
+}
+.back-link svg{ width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; }
+.safety-note{
+  margin-top:20px; border-left:3px solid var(--teal); background:var(--teal-tint); padding:14px 16px;
+  border-radius:0 var(--radius-s) var(--radius-s) 0; font-size:0.86rem; color:var(--ink-soft); max-width:60ch;
+}
+
+/* ============================================================
+   FILTER BAR
+   ============================================================ */
+.filter-bar{ display:flex; gap:8px; overflow-x:auto; padding:20px 0 4px; margin-bottom:6px; -webkit-overflow-scrolling:touch; }
+.filter-bar::-webkit-scrollbar{ display:none; }
+.filter-chip{
+  flex-shrink:0; border:1px solid var(--line-strong); background:var(--surface); border-radius:99px;
+  padding:9px 16px; font-size:0.83rem; font-weight:700; color:var(--ink-soft); min-height:38px;
+}
+.filter-chip.is-active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+:root[data-theme="studio"] .filter-chip.is-active{ background:var(--brass); color:#15181C; border-color:var(--brass); }
+
+/* ============================================================
+   EXERCISE / TWISTER CARDS (expandable)
+   ============================================================ */
+.exercise-grid{ display:grid; gap:12px; grid-template-columns:1fr; margin-top:18px; }
+@media (min-width:760px){ .exercise-grid{ grid-template-columns:repeat(2,1fr); } }
+.exercise-card{
+  border:1px solid var(--line); border-radius:var(--radius-m); background:var(--surface); overflow:hidden;
+}
+.exercise-head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; width:100%;
+  background:none; border:none; text-align:left;
+}
+.exercise-sound{ font-family:var(--font-display); font-style:italic; font-size:1.15rem; font-weight:600; }
+.exercise-meta{ display:flex; align-items:center; gap:12px; }
+.exercise-dur{ font-size:0.78rem; color:var(--ink-faint); font-weight:700; }
+.go-btn{
+  border:1px solid var(--line-strong); background:var(--surface-raised); border-radius:99px;
+  padding:8px 16px; font-weight:800; font-size:0.78rem; letter-spacing:0.03em; min-height:38px;
+}
+.exercise-body{ display:none; padding:0 18px 20px; border-top:1px solid var(--line); }
+.exercise-body.is-open{ display:block; padding-top:16px; }
+.exercise-body p{ color:var(--ink-soft); font-size:0.92rem; line-height:1.6; }
+.exercise-body .tech-list{ margin:12px 0 0; padding-left:18px; color:var(--ink-soft); font-size:0.9rem; line-height:1.7; }
+
+/* timer widget shared between exercise cards / twister cards / session overlay */
+.timer-widget{ margin-top:16px; }
+.timer-face{ display:flex; align-items:center; gap:16px; }
+.timer-clock{ font-family:var(--font-display); font-size:1.9rem; font-weight:600; min-width:74px; }
+.timer-ticks{ flex:1; display:flex; gap:3px; height:22px; align-items:flex-end; }
+.timer-ticks span{ flex:1; background:var(--line-strong); border-radius:1px; height:100%; transition:background .2s ease; }
+.timer-ticks span.is-filled{ background:var(--brass); }
+.timer-controls{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+.timer-status{ margin-top:10px; font-size:0.85rem; font-weight:700; color:var(--teal); display:none; }
+.timer-status.is-visible{ display:block; }
+
+/* twister card specifics */
+.twister-card .exercise-head{ align-items:flex-start; }
+.twister-hint{ font-size:0.85rem; color:var(--ink-faint); }
+.twister-hidden-text{ font-family:var(--font-display); font-style:italic; font-size:1.15rem; line-height:1.5; }
+.twister-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+.twister-tags span{
+  font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em;
+  border:1px solid var(--line-strong); border-radius:99px; padding:4px 9px; color:var(--ink-soft);
+}
+
+/* ============================================================
+   SESSION OVERLAY (focused speaking mode)
+   ============================================================ */
+.session-overlay{
+  position:fixed; inset:0; background:var(--paper); z-index:100; display:none;
+  overflow-y:auto;
+}
+.session-overlay.is-open{ display:block; }
+.session-inner{ max-width:620px; margin:0 auto; padding:80px 22px 60px; min-height:100%; display:flex; flex-direction:column; }
+.session-close{
+  position:fixed; top:18px; right:18px; width:42px; height:42px; border-radius:50%; border:1px solid var(--line-strong);
+  background:var(--surface-raised); display:flex; align-items:center; justify-content:center; z-index:5;
+}
+.session-close svg{ width:16px; height:16px; stroke:var(--ink); fill:none; stroke-width:2; }
+.session-phase{ font-size:0.78rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; color:var(--brass-deep); }
+:root[data-theme="studio"] .session-phase{ color:var(--brass); }
+.session-topic{
+  font-family:var(--font-display); font-size:clamp(1.6rem,5vw,2.3rem); font-style:italic; font-weight:500;
+  line-height:1.3; margin-top:14px;
+}
+.session-challenge{ margin-top:18px; font-size:1rem; color:var(--ink-soft); padding-top:16px; border-top:1px dashed var(--line-strong); }
+.session-timer{ margin-top:auto; padding-top:40px; text-align:center; }
+.session-clock{ font-family:var(--font-display); font-size:clamp(3rem,14vw,5rem); font-weight:300; letter-spacing:-0.02em; }
+.session-ticks{ display:flex; gap:3px; margin:18px 0; height:8px; }
+.session-ticks span{ flex:1; background:var(--line-strong); border-radius:2px; }
+.session-ticks span.is-filled{ background:var(--brass); }
+.session-controls{ display:flex; gap:10px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+.session-done{ display:none; text-align:center; margin-top:auto; padding-top:40px; }
+.session-done.is-visible{ display:block; }
+.session-done h3{ font-size:1.6rem; }
+.session-done p{ margin-top:10px; color:var(--ink-soft); }
+.session-done-actions{ display:flex; gap:10px; justify-content:center; margin-top:26px; flex-wrap:wrap; }
+
+/* ============================================================
+   LEGAL PANEL
+   ============================================================ */
+.legal-panel{
+  position:fixed; inset:0; background:rgba(20,17,12,0.5); z-index:110; display:none; align-items:flex-end; justify-content:center;
+}
+:root[data-theme="studio"] .legal-panel{ background:rgba(0,0,0,0.6); }
+.legal-panel.is-open{ display:flex; }
+.legal-sheet{
+  background:var(--surface-raised); border-radius:var(--radius-m) var(--radius-m) 0 0; max-width:640px; width:100%;
+  padding:28px 24px 34px; max-height:80vh; overflow-y:auto;
+}
+@media (min-width:640px){ .legal-sheet{ border-radius:var(--radius-m); margin-bottom:40px; } .legal-panel{ align-items:center; } }
+.legal-sheet h3{ font-size:1.3rem; }
+.legal-sheet p{ margin-top:12px; color:var(--ink-soft); font-size:0.92rem; line-height:1.6; }
+.legal-close{ margin-top:22px; }
+
+@media (min-width:900px){
+  .section{ padding:88px 0; }
+  .hero{ padding:64px 0 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav class="topnav">
+  <div class="shell topnav-row">
+    <button class="brand" data-nav="home" aria-label="Cadence — go to home">
+      <span class="brand-mark" aria-hidden="true"></span> Cadence
+    </button>
+    <div class="nav-links" role="navigation" aria-label="Primary">
+      <button data-nav="home">Practice</button>
+      <button data-nav="voice">Voice</button>
+      <button data-nav="twisters">Fluency</button>
+      <button data-nav="channels">Resources</button>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg id="themeIconSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2 2M17.8 17.8l2 2M2 12h3M19 12h3M4.2 19.8l2-2M17.8 6.2l2-2"/></svg>
+      </button>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button data-nav="home">Practice</button>
+    <button data-nav="voice">Voice</button>
+    <button data-nav="twisters">Fluency</button>
+    <button data-nav="channels">Resources</button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     PAGE: HOME
+     ============================================================ -->
+<main id="page-home" class="page is-active">
+
+  <!-- HERO -->
+  <section class="hero shell">
+    <span class="hero-kicker"><span class="dot" aria-hidden="true"></span> Today's practice takes about 12 minutes</span>
+    <h1>Speak better by <em>actually</em> speaking.</h1>
+    <p class="hero-sub">Cadence hands you a topic, a challenge and a timer — then gets out of the way. Spin for something to talk about, warm up your voice, or work through a tongue twister. No script, no account.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" data-scroll="wheelSection">Start speaking</button>
+      <button class="btn btn-outline" data-nav="voice">Explore exercises</button>
+    </div>
+  </section>
+
+  <!-- WHEEL -->
+  <section class="section wheel-section shell" id="wheelSection">
+    <div class="wheel-layout">
+      <div class="wheel-copy">
+        <div class="section-head">
+          <span class="eyebrow">Random speaking challenge</span>
+          <h2>Speak without preparing.</h2>
+          <p>The fastest way to get comfortable speaking is to practice thinking out loud. Spin the dial, get a topic and a challenge, and start talking before you have time to overthink it.</p>
+        </div>
+        <div class="wheel-legend" id="wheelLegend"></div>
+        <div class="result-panel" id="resultPanel">
+          <span class="result-label">Your turn</span>
+          <p class="result-topic" id="resultTopic">—</p>
+          <p class="result-challenge" id="resultChallenge">—</p>
+          <div class="result-actions">
+            <button class="btn btn-primary" id="startChallengeBtn">Start session</button>
+            <button class="btn btn-outline" id="spinAgainBtn">Spin again</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="dial-wrap">
+          <div class="dial-ring-labels" id="dialLabels"></div>
+          <div class="dial-outer">
+            <div class="dial-face" id="dialFace">
+              <svg viewBox="0 0 200 200" id="dialSvg" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div class="dial-pointer" aria-hidden="true"></div>
+          <div class="dial-hub">
+            <button id="spinBtn">SPIN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK PRACTICE MODES -->
+  <section class="section shell">
+    <div class="section-head">
+      <span class="eyebrow">Five ways in</span>
+      <h2>Practice modes</h2>
+      <p>Pick a mode that fits the next ten minutes. Each one opens straight into a session — topic, challenge, timer.</p>
+    </div>
+    <div class="mode-grid" id="modeGrid"></div>
+  </section>
+
+  <!-- VOICE TEASER -->
+  <section class="section shell">
+    <div class="split-feature">
+      <div class="feature-copy">
+        <span class="eyebrow">Voice</span>
+        <h2>Train your voice.</h2>
+        <p>Short, guided sound exercises for resonance, control and articulation — the same kind of warm-up singers and broadcasters use before they speak in public. Nothing here changes your anatomy; it builds awareness and coordination through repetition.</p>
+        <button class="btn btn-primary" data-nav="voice">Go to voice exercises</button>
+      </div>
+      <div class="mini-card-stack" id="voicePreviewList"></div>
+    </div>
+  </section>
+
+  <!-- TONGUE TWISTER TEASER -->
+  <section class="section shell">
+    <div class="split-feature">
+      <div class="mini-card-stack" id="twisterPreviewList" style="order:2"></div>
+      <div class="feature-copy" style="order:1">
+        <span class="eyebrow">Articulation</span>
+        <h2>Sharpen your articulation.</h2>
+        <p>Train your mouth to move quickly without sacrificing clarity. Filter by sound, reveal one at a time, and work up from slow to fast.</p>
+        <button class="btn btn-primary" data-nav="twisters">Practice tongue twisters</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DAILY PRACTICE -->
+  <section class="section shell">
+    <div class="section-head">
+      <span class="eyebrow" id="dailyDateLabel">Today's practice</span>
+      <h2>A short routine for today</h2>
+      <p>Four steps, about twelve minutes. The order changes daily so it doesn't get stale — no account needed to use it.</p>
+    </div>
+    <ol class="daily-list" id="dailyList"></ol>
+  </section>
+
+  <!-- FILLER WORD CHALLENGE -->
+  <section class="section shell">
+    <div class="section-head">
+      <span class="eyebrow">No filler</span>
+      <h2>Speak without fillers</h2>
+      <p>Words like these fill silence but say nothing. Pick a topic and try to get through two minutes without leaning on them.</p>
+    </div>
+    <div class="filler-words">
+      <span>um</span><span>uh</span><span>like</span><span>basically</span><span>you know</span><span>sort of</span><span>actually</span>
+    </div>
+    <div class="hero-actions" style="margin-top:24px;">
+      <button class="btn btn-primary" id="fillerStartBtn">Take the challenge</button>
+    </div>
+    <p class="tiny" style="margin-top:14px;">This times the attempt — it doesn't detect fillers automatically. Judge yourself honestly, or ask someone to listen.</p>
+  </section>
+
+  <!-- CHANNELS TEASER -->
+  <section class="section shell">
+    <div class="section-head">
+      <span class="eyebrow">Watch &amp; learn</span>
+      <h2>Learn from great communicators</h2>
+      <p>Fifteen channels worth following for public speaking, pronunciation, storytelling and body language.</p>
+    </div>
+    <div class="channel-grid" id="channelPreviewGrid"></div>
+    <div class="hero-actions" style="margin-top:26px;">
+      <button class="btn btn-outline" data-nav="channels">See all channels</button>
+    </div>
+  </section>
+
+  <!-- WORD OF THE DAY -->
+  <section class="section shell">
+    <div class="section-head">
+      <span class="eyebrow">Vocabulary</span>
+      <h2>Word of the day</h2>
+      <p>A word worth using on purpose. Work it into a sentence while you talk today — naturally, not forced.</p>
+    </div>
+    <div class="word-card" id="wordCard"></div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section class="section shell">
+    <div class="section-head">
+      <span class="eyebrow">Your practice</span>
+      <h2>Progress</h2>
+      <p>Stored only on this device — nothing is sent anywhere, and no account is required.</p>
+    </div>
+    <div class="progress-grid" id="progressGrid"></div>
+    <button class="btn btn-ghost progress-reset" id="resetProgressBtn">Clear my local progress</button>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     PAGE: VOICE EXERCISES
+     ============================================================ -->
+<main id="page-voice" class="page">
+  <div class="shell subpage-hero">
+    <button class="back-link" data-nav="home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Back</button>
+    <span class="eyebrow">Voice</span>
+    <h2 style="font-size:clamp(1.8rem,5vw,2.6rem); margin-top:8px;">Train your voice</h2>
+    <p style="margin-top:14px; color:var(--ink-soft); max-width:60ch;">Twenty short sound exercises for resonance, breath control and articulation. Tap a card to open it, then start its timer. These build practice and awareness — they don't change your anatomy.</p>
+    <div class="safety-note">Stop if an exercise causes pain, strain or persistent discomfort. Keep the sound comfortable, never forced.</div>
+  </div>
+  <div class="shell" style="padding-bottom:80px;">
+    <div class="exercise-grid" id="voiceGrid"></div>
+  </div>
+</main>
+
+<!-- ============================================================
+     PAGE: TONGUE TWISTERS
+     ============================================================ -->
+<main id="page-twisters" class="page">
+  <div class="shell subpage-hero">
+    <button class="back-link" data-nav="home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Back</button>
+    <span class="eyebrow">Articulation</span>
+    <h2 style="font-size:clamp(1.8rem,5vw,2.6rem); margin-top:8px;">Sharpen your articulation</h2>
+    <p style="margin-top:14px; color:var(--ink-soft); max-width:60ch;">Thirty tongue twisters, organized by target sound and difficulty. Reveal one, say it slowly five times, then quickly five times.</p>
+  </div>
+  <div class="shell">
+    <div class="filter-bar" id="twisterFilterBar"></div>
+  </div>
+  <div class="shell" style="padding-bottom:80px;">
+    <div class="exercise-grid" id="twisterGrid"></div>
+  </div>
+</main>
+
+<!-- ============================================================
+     PAGE: CHANNELS
+     ============================================================ -->
+<main id="page-channels" class="page">
+  <div class="shell subpage-hero">
+    <button class="back-link" data-nav="home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Back</button>
+    <span class="eyebrow">Watch &amp; learn</span>
+    <h2 style="font-size:clamp(1.8rem,5vw,2.6rem); margin-top:8px;">Learn from great communicators</h2>
+    <p style="margin-top:14px; color:var(--ink-soft); max-width:60ch;">Fifteen real, active YouTube channels across public speaking, pronunciation, confidence, storytelling and body language. Each link opens the channel directly.</p>
+  </div>
+  <div class="shell" style="padding-bottom:80px;">
+    <div class="channel-grid" id="channelFullGrid" style="margin-top:24px;"></div>
+  </div>
+</main>
+
+<!-- ============================================================
+     SESSION OVERLAY
+     ============================================================ -->
+<div class="session-overlay" id="sessionOverlay" role="dialog" aria-modal="true" aria-label="Speaking session">
+  <button class="session-close" id="sessionCloseBtn" aria-label="Close session">
+    <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <div class="session-inner">
+    <div id="sessionMain">
+      <span class="session-phase" id="sessionPhaseLabel">Topic</span>
+      <p class="session-topic" id="sessionTopic">—</p>
+      <p class="session-challenge" id="sessionChallenge">—</p>
+      <div class="session-timer">
+        <div class="session-clock" id="sessionClock">01:00</div>
+        <div class="session-ticks" id="sessionTicks"></div>
+        <div class="session-controls">
+          <button class="btn btn-primary" id="sessionStartBtn">Start</button>
+          <button class="btn btn-outline" id="sessionPauseBtn" style="display:none;">Pause</button>
+          <button class="btn btn-outline" id="sessionFinishBtn" style="display:none;">Finish</button>
+        </div>
+      </div>
+    </div>
+    <div class="session-done" id="sessionDone">
+      <h3 id="sessionDoneHeadline">Nice. You finished the session.</h3>
+      <p id="sessionDoneSub">Your progress has been updated.</p>
+      <div class="session-done-actions">
+        <button class="btn btn-primary" id="sessionAgainBtn">New topic</button>
+        <button class="btn btn-outline" id="sessionBackBtn">Back to practice</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     LEGAL PANEL
+     ============================================================ -->
+<div class="legal-panel" id="legalPanel">
+  <div class="legal-sheet">
+    <h3 id="legalTitle">Privacy</h3>
+    <div id="legalBody"></div>
+    <button class="btn btn-outline legal-close" id="legalCloseBtn">Close</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="shell footer-grid">
+    <div class="footer-brand">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Cadence</div>
+      <p>A speaking-practice tool: random topics, voice warm-ups and articulation drills. Built for people who want to speak with more confidence.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <button data-nav="home">Home</button>
+      <button data-nav="home" data-scroll="wheelSection">Practice</button>
+      <button data-nav="voice">Voice</button>
+      <button data-nav="twisters">Tongue twisters</button>
+      <button data-nav="channels">Channels</button>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <button data-nav="home" data-scroll="wheelSection">Speaking practice</button>
+      <button data-nav="voice">Voice exercises</button>
+      <button data-nav="home" data-scroll="wheelSection">Fluency</button>
+      <button data-nav="twisters">Articulation</button>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <button id="privacyLink">Privacy</button>
+      <button id="termsLink">Terms</button>
+    </div>
+  </div>
+  <div class="shell footer-bottom">
+    <span>© 2026 Cadence. All rights reserved.</span>
+    <span>Built for people who want to speak with more confidence.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   SAFE STORAGE — never let localStorage break the app
+   ============================================================ */
+var storageOK = true;
+function lsGet(key, fallback){
+  try{
+    var raw = window.localStorage.getItem(key);
+    if(raw === null || raw === undefined) return fallback;
+    return JSON.parse(raw);
+  }catch(e){ return fallback; }
+}
+function lsSet(key, value){
+  try{ window.localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch(e){ storageOK = false; return false; }
+}
+function lsRemoveAll(keys){
+  try{ keys.forEach(function(k){ window.localStorage.removeItem(k); }); }catch(e){}
+}
+
+/* ============================================================
+   DATA — TOPICS  (8 categories x 15 = 120 topics)
+   ============================================================ */
+var CATEGORIES = [
+  { id:"story",      label:"Story",      color1:"#8C6423", color2:"#B07F2E" },
+  { id:"opinion",     label:"Opinion",    color1:"#3F6A63", color2:"#588E85" },
+  { id:"personal",    label:"Personal",   color1:"#5A4A33", color2:"#7A6748" },
+  { id:"imagine",     label:"Imagine",    color1:"#3F6A63", color2:"#588E85" },
+  { id:"explain",     label:"Explain",    color1:"#8C6423", color2:"#B07F2E" },
+  { id:"debate",      label:"Debate",     color1:"#5A4A33", color2:"#7A6748" },
+  { id:"experience",  label:"Experience", color1:"#3F6A63", color2:"#588E85" },
+  { id:"challenge",   label:"Challenge",  color1:"#8C6423", color2:"#B07F2E" }
+];
+
+var TOPICS = [
+  // STORY
+  {c:"story",t:"Tell a story about a mistake you learned from."},
+  {c:"story",t:"Describe the most unexpected day of your life."},
+  {c:"story",t:"Create a story that begins with: \"The door was already open.\""},
+  {c:"story",t:"Tell a story about getting lost somewhere."},
+  {c:"story",t:"Describe a moment you almost gave up on something."},
+  {c:"story",t:"Tell a story about a promise you kept or broke."},
+  {c:"story",t:"Describe a time a stranger helped you."},
+  {c:"story",t:"Create a story that begins with: \"I should have known better.\""},
+  {c:"story",t:"Describe the last time you laughed until it hurt."},
+  {c:"story",t:"Tell a story about waiting for something important."},
+  {c:"story",t:"Describe a time you had to think on your feet."},
+  {c:"story",t:"Tell a story about a gift that meant more than its price."},
+  {c:"story",t:"Describe a moment that changed how you see your family."},
+  {c:"story",t:"Tell a story about the best advice you ignored."},
+  {c:"story",t:"Describe a time you surprised yourself."},
+  // OPINION
+  {c:"opinion",t:"Is social media helpful or harmful, on balance?"},
+  {c:"opinion",t:"Should students have part-time jobs while studying?"},
+  {c:"opinion",t:"Is money a fair measure of success?"},
+  {c:"opinion",t:"Should school uniforms be compulsory?"},
+  {c:"opinion",t:"Is it better to specialize deeply or know a little about everything?"},
+  {c:"opinion",t:"Should university be free for everyone?"},
+  {c:"opinion",t:"Is competition good for children?"},
+  {c:"opinion",t:"Should companies allow permanent remote work?"},
+  {c:"opinion",t:"Is it ever right to tell a small lie to protect someone's feelings?"},
+  {c:"opinion",t:"Should voting be mandatory?"},
+  {c:"opinion",t:"Is fame something worth wanting?"},
+  {c:"opinion",t:"Should everyone learn to cook, regardless of interest?"},
+  {c:"opinion",t:"Is it better to live in a big city or a small town?"},
+  {c:"opinion",t:"Should people be paid to exercise?"},
+  {c:"opinion",t:"Is patience becoming a lost skill?"},
+  // PERSONAL
+  {c:"personal",t:"Describe your ideal weekend, hour by hour."},
+  {c:"personal",t:"Talk about a childhood memory that still feels vivid."},
+  {c:"personal",t:"Describe someone who influenced you and how."},
+  {c:"personal",t:"What makes you feel confident?"},
+  {c:"personal",t:"Describe a habit you're proud of building."},
+  {c:"personal",t:"What does the word \"home\" mean to you?"},
+  {c:"personal",t:"Describe a fear you've overcome, or are still working on."},
+  {c:"personal",t:"What's a skill you taught yourself?"},
+  {c:"personal",t:"Describe your morning routine and why it works for you."},
+  {c:"personal",t:"What's something you collect, or used to collect?"},
+  {c:"personal",t:"Describe a place that feels like yours."},
+  {c:"personal",t:"What's a rule you try to live by?"},
+  {c:"personal",t:"Describe your relationship with time — are you early, late, exact?"},
+  {c:"personal",t:"What's something you're still learning about yourself?"},
+  {c:"personal",t:"Describe the last thing that made you proud."},
+  // IMAGINE
+  {c:"imagine",t:"If you could live anywhere for a year, where would you go?"},
+  {c:"imagine",t:"If you woke up with unlimited money, what would you do first?"},
+  {c:"imagine",t:"Invent a new piece of technology and explain what it does."},
+  {c:"imagine",t:"Imagine humanity living on Mars. Describe an ordinary day there."},
+  {c:"imagine",t:"If you could add one hour to every day, how would you use it?"},
+  {c:"imagine",t:"Imagine talking to yourself ten years from now. What would you ask?"},
+  {c:"imagine",t:"If your city had no rules for exactly one day, what would happen?"},
+  {c:"imagine",t:"Imagine a job that doesn't exist yet. Describe it."},
+  {c:"imagine",t:"If you could relive one year of your life, which would it be?"},
+  {c:"imagine",t:"Imagine a week with no internet. Describe how it would go."},
+  {c:"imagine",t:"If animals could say one sentence to humans, what would it be?"},
+  {c:"imagine",t:"Imagine you're the mayor of your town for a single day."},
+  {c:"imagine",t:"If you could master any skill instantly, what would you choose?"},
+  {c:"imagine",t:"Imagine a museum built entirely about your life. Describe a room in it."},
+  {c:"imagine",t:"If you could redesign school from scratch, what would it look like?"},
+  // EXPLAIN
+  {c:"explain",t:"Explain why you deserve a leadership position."},
+  {c:"explain",t:"Explain something complicated in the simplest language you can."},
+  {c:"explain",t:"Introduce yourself without mentioning your job or education."},
+  {c:"explain",t:"Explain how to make your favorite dish without any notes."},
+  {c:"explain",t:"Explain the rules of your favorite game to someone who's never played."},
+  {c:"explain",t:"Explain why first impressions matter — or why they shouldn't."},
+  {c:"explain",t:"Explain a concept from school you still remember clearly."},
+  {c:"explain",t:"Explain the difference between being confident and being arrogant."},
+  {c:"explain",t:"Explain how you'd teach a five-year-old to tell time."},
+  {c:"explain",t:"Explain what makes someone a good leader."},
+  {c:"explain",t:"Explain a decision you made that others didn't understand."},
+  {c:"explain",t:"Explain how weather forecasting works, as best you can."},
+  {c:"explain",t:"Explain why practice matters more than talent — or the reverse."},
+  {c:"explain",t:"Explain your job to someone from two hundred years ago."},
+  {c:"explain",t:"Explain, in plain words, how two computers talk to each other online."},
+  // DEBATE
+  {c:"debate",t:"Technology makes people less social."},
+  {c:"debate",t:"Failure is more valuable than success."},
+  {c:"debate",t:"Everyone should learn public speaking."},
+  {c:"debate",t:"Remote work is better than office work."},
+  {c:"debate",t:"Social media does more harm than good."},
+  {c:"debate",t:"Cities are better places to raise children than small towns."},
+  {c:"debate",t:"Artificial intelligence will create more jobs than it destroys."},
+  {c:"debate",t:"Traditions should evolve rather than stay fixed."},
+  {c:"debate",t:"Money can buy happiness."},
+  {c:"debate",t:"Grades are a fair way to measure ability."},
+  {c:"debate",t:"Privacy matters more than convenience."},
+  {c:"debate",t:"Competition brings out the best in people."},
+  {c:"debate",t:"It's better to be a specialist than a generalist."},
+  {c:"debate",t:"Streaming has made the music business better for artists."},
+  {c:"debate",t:"Handwriting is a skill worth keeping."},
+  // EXPERIENCE
+  {c:"experience",t:"Describe what you'd do if you lost your phone in a new city."},
+  {c:"experience",t:"Give advice to someone starting college."},
+  {c:"experience",t:"Describe how you'd handle disagreeing with your boss."},
+  {c:"experience",t:"Describe your approach to a stressful deadline."},
+  {c:"experience",t:"Describe what you'd do with an unexpected free day."},
+  {c:"experience",t:"Describe how you'd comfort a friend having a hard week."},
+  {c:"experience",t:"Describe your first day at a new job, real or imagined."},
+  {c:"experience",t:"Describe how you'd handle being corrected in front of others."},
+  {c:"experience",t:"Describe a time you had to ask for help."},
+  {c:"experience",t:"Describe how you'd plan a trip with no set itinerary."},
+  {c:"experience",t:"Describe what you'd do if a plan fell apart at the last minute."},
+  {c:"experience",t:"Describe how you'd welcome someone new to your team."},
+  {c:"experience",t:"Describe your approach to learning a new language."},
+  {c:"experience",t:"Describe how you'd apologize for a mistake at work."},
+  {c:"experience",t:"Describe what you'd do during a long delay at an airport."},
+  // CHALLENGE
+  {c:"challenge",t:"Convince someone to try your favorite hobby."},
+  {c:"challenge",t:"Persuade someone to change their mind about something small."},
+  {c:"challenge",t:"Defend an opinion you don't actually hold."},
+  {c:"challenge",t:"Give three reasons someone should visit your hometown."},
+  {c:"challenge",t:"Sell an ordinary object as if it were extraordinary."},
+  {c:"challenge",t:"Argue both sides of a simple question, one after another."},
+  {c:"challenge",t:"Change your position halfway through speaking."},
+  {c:"challenge",t:"Give a one-minute toast for a friend's achievement."},
+  {c:"challenge",t:"Talk your way through a situation where you're clearly wrong."},
+  {c:"challenge",t:"Pitch an idea you've never thought about before today."},
+  {c:"challenge",t:"Introduce a stranger to the room as if you've known them for years."},
+  {c:"challenge",t:"Explain why today is a good day, even if it hasn't been."},
+  {c:"challenge",t:"Make the case for doing nothing for an entire day."},
+  {c:"challenge",t:"Turn a complaint into a compliment, out loud."},
+  {c:"challenge",t:"Describe your day so far as if it were a nature documentary."}
+];
+TOPICS.forEach(function(t,i){ t.id = "topic-"+i; });
+
+var CHALLENGES = [
+  "Speak for 1 minute without stopping.",
+  "Speak for 2 minutes without stopping.",
+  "Speak for 3 minutes without stopping.",
+  "Speak for 5 minutes without stopping.",
+  "Start immediately — no preparation time.",
+  "Give three reasons to support what you say.",
+  "Work a personal story into your answer.",
+  "Explain it as if talking to a curious eight-year-old.",
+  "Defend the opposite point of view for your last 30 seconds.",
+  "Speak without using filler words like \"um\" or \"like.\"",
+  "Speak slowly and clearly — twice as slow as normal.",
+  "Use at least five descriptive words.",
+  "Structure it with a clear beginning, middle and end.",
+  "Try to genuinely convince the listener by the end.",
+  "Present both sides fairly before giving your own view.",
+  "Change your position at least once while speaking.",
+  "Speak as if you're opening a conference talk.",
+  "End with one sentence worth remembering.",
+  "Speak without looking at notes or a script.",
+  "If you lose your train of thought, keep talking anyway."
+];
+
+/* Session default durations for a plain wheel challenge, in seconds */
+var DEFAULT_TOPIC_SECONDS = 180;
+
+/* ============================================================
+   DATA — VOICE EXERCISES (20)
+   ============================================================ */
+var VOICE_EXERCISES = [
+  {sound:"Zeeeee", dur:60, reps:"2–3 rounds", tech:["Relax your jaw.","Keep the sound steady and even.","Notice a light vibration around the lips and front of the face.","Rest between rounds."]},
+  {sound:"Vvvvvvv", dur:60, reps:"2–3 rounds", tech:["Keep the lips relaxed, not pressed tight.","Hold a steady vibration.","Avoid forcing the sound from the throat."]},
+  {sound:"Mmmmmm", dur:60, reps:"2–3 rounds", tech:["Close the lips gently.","Produce a comfortable hum, not a strain.","Notice the vibration around the lips and face."]},
+  {sound:"Nnnnnn", dur:45, reps:"2 rounds", tech:["Rest the tongue tip lightly behind the front teeth.","Let the sound resonate through the nose.","Keep the jaw loose."]},
+  {sound:"Ngggg", dur:45, reps:"2 rounds", tech:["Lift the back of the tongue toward the soft palate.","Keep airflow steady through the nose.","Avoid tightening the throat."]},
+  {sound:"Oooooo", dur:45, reps:"2 rounds", tech:["Round the lips gently.","Keep the jaw dropped and relaxed.","Let the tone stay even from start to finish."]},
+  {sound:"Aaaaaa", dur:45, reps:"2 rounds", tech:["Drop the jaw comfortably open.","Keep the tone smooth, without pushing volume.","Breathe from lower in the body, not just the chest."]},
+  {sound:"Eeeeee", dur:45, reps:"2 rounds", tech:["Keep the corners of the mouth soft, not stretched.","Maintain a steady, even pitch.","Notice resonance near the front of the mouth."]},
+  {sound:"Uuuuuu", dur:45, reps:"2 rounds", tech:["Round the lips slightly forward.","Keep the sound low and steady.","Avoid tension in the neck."]},
+  {sound:"Llllll", dur:40, reps:"2 rounds", tech:["Place the tongue tip lightly behind the top teeth.","Keep the sound continuous, not clipped.","Relax the jaw between repetitions."]},
+  {sound:"Rrrrrr", dur:40, reps:"2 rounds", tech:["Curl the tongue slightly without tensing it.","Keep airflow steady and unforced.","Stop if the tongue feels strained."]},
+  {sound:"Yyyyyy", dur:40, reps:"2 rounds", tech:["Start with a relaxed jaw.","Let the sound glide smoothly.","Keep volume comfortable, not pushed."]},
+  {sound:"Woooooo", dur:40, reps:"2 rounds", tech:["Round the lips fully.","Let the pitch move gently up and down.","Keep the throat open and relaxed."]},
+  {sound:"Zee — Zah — Zoo", dur:60, reps:"3 rounds, slow to quick", tech:["Move cleanly between the three vowel shapes.","Keep each sound distinct before speeding up.","Prioritize clarity over speed."]},
+  {sound:"Me — May — My — Mo — Moo", dur:60, reps:"3 rounds, slow to quick", tech:["Keep the lips closed cleanly on each \"M.\"","Move through the vowels smoothly.","Repeat slowly first, then pick up the pace."]},
+  {sound:"La — Le — Li — Lo — Lu", dur:60, reps:"3 rounds, slow to quick", tech:["Tap the tongue tip lightly and precisely.","Keep each syllable equally clear.","Speed up only once it stays clean."]},
+  {sound:"Vee — Vay — Vie — Vo — Voo", dur:60, reps:"3 rounds, slow to quick", tech:["Keep the lip-and-teeth contact light.","Maintain even airflow across all five sounds.","Don't rush past unclear syllables."]},
+  {sound:"Mum — Mom — Mem — Mim — Mum", dur:60, reps:"3 rounds, slow to quick", tech:["Keep the jaw loose between each word.","Let resonance sit around the lips and nose.","Speed up gradually, not all at once."]},
+  {sound:"Breath count", dur:45, reps:"3 rounds", tech:["Take one relaxed breath.","Count out loud as far as you comfortably can on that single breath.","Notice how far you get without straining — no need to push."]},
+  {sound:"Pitch glide", dur:45, reps:"3 rounds", tech:["Start on a comfortable low \"ah.\"","Glide smoothly up to a comfortable higher pitch.","Keep the slide even — no cracks or jumps, and never force the top."]}
+];
+VOICE_EXERCISES.forEach(function(v,i){ v.id="voice-"+i; });
+
+/* ============================================================
+   DATA — TONGUE TWISTERS (30)
+   ============================================================ */
+var TONGUE_TWISTERS = [
+  {t:"Peter Piper picked a peck of pickled peppers.", target:"P/B", diff:"Medium"},
+  {t:"She sells seashells by the seashore.", target:"S/SH", diff:"Medium"},
+  {t:"Red lorry, yellow lorry.", target:"R/L", diff:"Hard"},
+  {t:"Unique New York, unique New York, unique New York.", target:"Fast speaking", diff:"Hard"},
+  {t:"Six slippery snails slid slowly seaward.", target:"S/SH", diff:"Medium"},
+  {t:"Eleven benevolent elephants.", target:"T/D", diff:"Easy"},
+  {t:"Fresh fried fish, fresh fried fish.", target:"Fast speaking", diff:"Medium"},
+  {t:"Irish wristwatch, Swiss wristwatch.", target:"S/SH", diff:"Hard"},
+  {t:"Truly rural, truly rural, truly rural.", target:"R/L", diff:"Hard"},
+  {t:"A proper copper coffee pot.", target:"P/B", diff:"Medium"},
+  {t:"Lesser leather never weathered wetter weather better.", target:"TH", diff:"Hard"},
+  {t:"Which wristwatches are Swiss wristwatches?", target:"S/SH", diff:"Hard"},
+  {t:"Six sleek swans swam swiftly southwards.", target:"S/SH", diff:"Medium"},
+  {t:"Black background, brown background.", target:"P/B", diff:"Medium"},
+  {t:"Specific Pacific, specific Pacific.", target:"S/SH", diff:"Hard"},
+  {t:"Toy boat, toy boat, toy boat.", target:"T/D", diff:"Hard"},
+  {t:"Greek grapes, Greek grapes, Greek grapes.", target:"Fast speaking", diff:"Medium"},
+  {t:"Blue bluebird blinks.", target:"P/B", diff:"Easy"},
+  {t:"Big black bug bit a big black bear.", target:"P/B", diff:"Medium"},
+  {t:"Rubber baby buggy bumpers.", target:"P/B", diff:"Medium"},
+  {t:"Thirty-three thieves thought that they thrilled the throne throughout Thursday.", target:"TH", diff:"Hard"},
+  {t:"How much wood would a woodchuck chuck if a woodchuck could chuck wood?", target:"Fast speaking", diff:"Medium"},
+  {t:"The sixth sick sheikh's sixth sheep's sick.", target:"S/SH", diff:"Hard"},
+  {t:"I saw Susie sitting in a shoeshine shop.", target:"S/SH", diff:"Medium"},
+  {t:"Betty Botter bought some butter.", target:"T/D", diff:"Easy"},
+  {t:"Can you can a can as a canner can can a can?", target:"Fast speaking", diff:"Hard"},
+  {t:"Fuzzy Wuzzy was a bear, Fuzzy Wuzzy had no hair.", target:"Fast speaking", diff:"Easy"},
+  {t:"Willy's real wristwatch will run well.", target:"R/L", diff:"Medium"},
+  {t:"A big bug bit the little beetle, but the little beetle bit the big bug back.", target:"P/B", diff:"Hard"},
+  {t:"Three free throws, three free throws, three free throws.", target:"TH", diff:"Medium"}
+];
+TONGUE_TWISTERS.forEach(function(tw,i){ tw.id="tw-"+i; });
+
+/* ============================================================
+   DATA — CHANNELS (15, real active channels)
+   ============================================================ */
+var CHANNELS = [
+  {name:"TED", cat:"Public speaking", url:"https://www.youtube.com/@TED", desc:"The full range of TED talks, from eighteen-minute mainstage talks to short highlights.", why:"The clearest library of what well-structured, well-delivered talks actually sound like."},
+  {name:"TEDx Talks", cat:"Public speaking", url:"https://www.youtube.com/@TEDx", desc:"Independently organized TED-style talks from communities around the world.", why:"More variety in speaker experience and style than the flagship channel."},
+  {name:"Vinh Giang", cat:"Voice training", url:"https://www.youtube.com/@askvinh", desc:"A communication teacher and magician breaking down vocal variety, tone and delivery.", why:"Specific, practical breakdowns of how tone and pacing change how you're heard."},
+  {name:"Charisma on Command", cat:"Confidence", url:"https://www.youtube.com/@Charismaoncommand", desc:"Video breakdowns of confidence, body language and social skill in real footage.", why:"Frame-by-frame analysis makes abstract advice concrete."},
+  {name:"English with Lucy", cat:"Pronunciation", url:"https://www.youtube.com/@EnglishwithLucy", desc:"British English pronunciation, vocabulary and accent training.", why:"Clear, patient explanations of specific sounds and mouth positions."},
+  {name:"Rachel's English", cat:"Pronunciation", url:"https://www.youtube.com/@rachelsenglish", desc:"American English pronunciation from a classically trained singer and teacher.", why:"Detailed mouth-position breakdowns for individual sounds."},
+  {name:"Vanessa Van Edwards", cat:"Body language", url:"https://www.youtube.com/@Vvanedwards", desc:"Research-based breakdowns of body language, charisma and conversation.", why:"Grounds confidence advice in behavioral research rather than opinion."},
+  {name:"The Moth", cat:"Storytelling", url:"https://www.youtube.com/@themoth", desc:"True personal stories told live, without notes, from stages around the world.", why:"The best model for telling a real story with a clear arc and no script."},
+  {name:"Communication Coach Alexander Lyon", cat:"Presentation skills", url:"https://www.youtube.com/@alexanderlyon", desc:"A communication professor's practical lessons on leadership and presentation skills.", why:"Structured, classroom-clear frameworks you can apply immediately."},
+  {name:"Speak English With Vanessa", cat:"English speaking", url:"https://www.youtube.com/@SpeakEnglishWithVanessa", desc:"Natural, conversational English speaking and fluency practice.", why:"Focused specifically on sounding natural rather than just grammatically correct."},
+  {name:"Speak Confident English", cat:"Confidence", url:"https://www.youtube.com/c/Speakconfidentenglish", desc:"English fluency and confidence lessons aimed at real conversations at work.", why:"Directly addresses the anxiety of speaking, not just the language itself."},
+  {name:"Fluency MC", cat:"Articulation", url:"https://www.youtube.com/channel/UCo16riRNUATQWQxJODH6qwg", desc:"English rhythm, stress and grammar taught through rap and rhyme.", why:"An unusual, memorable way to internalize rhythm and stress patterns."},
+  {name:"BBC Learning English", cat:"Pronunciation", url:"https://www.youtube.com/@bbclearningenglish", desc:"Long-running, professionally produced English lessons covering pronunciation and vocabulary.", why:"Consistently high production quality and clear native-speaker models."},
+  {name:"Toastmasters International", cat:"Public speaking", url:"https://www.youtube.com/@toastmasters", desc:"The official channel of the public speaking and leadership organization.", why:"Direct access to the same principles taught inside Toastmasters clubs worldwide."},
+  {name:"VOA Learning English", cat:"English speaking", url:"https://www.youtube.com/@voalearningenglish", desc:"Slow, clear American English news and lessons for learners at every level.", why:"Deliberately slower pacing makes it easier to shadow and repeat aloud."}
+];
+CHANNELS.forEach(function(ch,i){ ch.id="ch-"+i; });
+
+/* ============================================================
+   DATA — RANDOM QUESTIONS (24)
+   ============================================================ */
+var QUESTIONS = [
+  "What is something you changed your mind about?",
+  "What makes a person trustworthy?",
+  "What would you teach everyone if you had one day?",
+  "What is one problem you'd solve in your city if you could?",
+  "What makes a conversation memorable?",
+  "What's a small decision that had a big effect on your life?",
+  "What do people misunderstand about you?",
+  "What's worth being patient for?",
+  "What's a rule you think most people should break sometimes?",
+  "What does being productive actually mean to you?",
+  "What's something you do differently than most people you know?",
+  "What's a compliment that stuck with you?",
+  "What's the most useful thing you learned outside of school?",
+  "What would you do with a completely silent day?",
+  "What's a question you wish people asked you more often?",
+  "What's something you used to be embarrassed about but aren't anymore?",
+  "What does it mean to really listen to someone?",
+  "What's a habit worth building before you turn thirty — or after?",
+  "What's something ordinary that you think is underrated?",
+  "What would you change about how you were taught to speak in public?",
+  "What's a piece of advice you give often but don't always follow?",
+  "What does it take to earn someone's trust back?",
+  "What's a belief you hold that not everyone agrees with?",
+  "What's something you'd like to be remembered for?"
+];
+
+/* ============================================================
+   DATA — WORDS (24)
+   ============================================================ */
+var WORDS = [
+  {w:"Articulate", m:"Able to express thoughts clearly and effectively.", ex:"She gave an articulate answer, even under pressure.", ch:"Use this word naturally three times while you speak today."},
+  {w:"Candid", m:"Truthful and straightforward, without softening the truth.", ex:"He gave a candid account of what went wrong.", ch:"Describe something with total candor, no hedging."},
+  {w:"Nuance", m:"A subtle distinction or shade of meaning.", ex:"The debate missed the nuance of the original argument.", ch:"Explain a topic while pointing out its nuance."},
+  {w:"Rapport", m:"A close, harmonious relationship built on mutual understanding.", ex:"The interviewer built rapport before asking hard questions.", ch:"Try to build rapport with a stranger before making your point."},
+  {w:"Concise", m:"Giving information clearly in few words.", ex:"Her concise summary saved the whole meeting time.", ch:"Explain your day in under thirty seconds, staying concise."},
+  {w:"Anecdote", m:"A short, personal story used to illustrate a point.", ex:"He opened his talk with a quick anecdote.", ch:"Start your next answer with a short anecdote."},
+  {w:"Persuasive", m:"Effective at convincing someone of something.", ex:"Her persuasive tone won over the skeptics.", ch:"Give a persuasive case for something small, like your lunch order."},
+  {w:"Reticent", m:"Not revealing thoughts or feelings readily.", ex:"He stayed reticent about his plans until they were final.", ch:"Describe a time you were reticent, and why."},
+  {w:"Eloquent", m:"Fluent and persuasive in speaking or writing.", ex:"The eulogy was simple but eloquent.", ch:"Aim for one eloquent sentence in your next answer."},
+  {w:"Ambiguous", m:"Open to more than one interpretation.", ex:"The instructions were ambiguous, so everyone did something different.", ch:"Describe something ambiguous and then clarify it out loud."},
+  {w:"Candor", m:"The quality of being open and honest.", ex:"She spoke with unusual candor about the failure.", ch:"Answer one question today with complete candor."},
+  {w:"Coherent", m:"Logical and consistent; easy to follow.", ex:"His argument stayed coherent from start to finish.", ch:"Explain a plan in a coherent order — first, then, finally."},
+  {w:"Diction", m:"The choice and use of words in speech.", ex:"Her precise diction made the technical talk easy to follow.", ch:"Choose one deliberately precise word instead of a vague one."},
+  {w:"Empathy", m:"The ability to understand and share another's feelings.", ex:"He listened with real empathy before offering advice.", ch:"Describe a disagreement from the other person's point of view."},
+  {w:"Fluency", m:"The ability to speak smoothly and effortlessly.", ex:"Fluency comes from repetition, not from memorizing rules.", ch:"Speak for one minute on any topic, aiming purely for fluency."},
+  {w:"Improvise", m:"To create or perform without preparation.", ex:"She had to improvise when her slides failed.", ch:"Improvise a 60-second answer to a question you haven't seen."},
+  {w:"Inflection", m:"A change in pitch or tone of the voice.", ex:"His flat inflection made the joke land badly.", ch:"Say the same sentence three times with different inflection."},
+  {w:"Rhetoric", m:"The art of effective or persuasive speaking.", ex:"The speech relied more on rhetoric than on evidence.", ch:"Notice the rhetoric in the next ad or speech you hear."},
+  {w:"Succinct", m:"Brief and clearly expressed.", ex:"He gave a succinct answer that ended the debate.", ch:"Answer a question in exactly two sentences."},
+  {w:"Tangent", m:"A sudden departure from the main subject.", ex:"The story went off on a tangent about the weather.", ch:"Notice the next time you go on a tangent, and steer back."},
+  {w:"Vernacular", m:"The everyday language of ordinary people.", ex:"He switched from formal English to local vernacular.", ch:"Explain something technical in plain vernacular."},
+  {w:"Cadence", m:"The rhythm and flow of spoken language.", ex:"Her cadence made even the bad news feel calm.", ch:"Speak one sentence slowly, paying attention to its cadence."},
+  {w:"Discourse", m:"Written or spoken communication or debate.", ex:"The panel's discourse stayed civil despite disagreeing.", ch:"Keep a disagreement today at the level of discourse, not argument."},
+  {w:"Poise", m:"A graceful, steady manner, especially under pressure.", ex:"She answered the hard question with total poise.", ch:"Pause for one full second before answering your next question."}
+];
+
+/* ============================================================
+   SEEDED RANDOM (deterministic per calendar day where needed)
+   ============================================================ */
+function safeScrollIntoView(el, opts){
+  if(el && typeof el.scrollIntoView === "function"){
+    try{ el.scrollIntoView(opts); }catch(e){}
+  }
+}
+function dayKey(){
+  var d = new Date();
+  return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+}
+function seedFromString(str){
+  var h = 0;
+  for(var i=0;i<str.length;i++){ h = (h<<5)-h+str.charCodeAt(i); h |= 0; }
+  return Math.abs(h);
+}
+function seededPick(arr, seed){
+  return arr[seed % arr.length];
+}
+
+/* ============================================================
+   RECENT-PICK AVOIDANCE
+   ============================================================ */
+function pickAvoidingRecent(pool, storageKey, keyFn){
+  var recent = lsGet(storageKey, []);
+  var available = pool.filter(function(item){ return recent.indexOf(keyFn(item)) === -1; });
+  if(available.length === 0){ available = pool; recent = []; }
+  var pick = available[Math.floor(Math.random()*available.length)];
+  recent.push(keyFn(pick));
+  if(recent.length > 8) recent = recent.slice(recent.length-8);
+  lsSet(storageKey, recent);
+  return pick;
+}
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+var PROGRESS_KEY = "cadence_progress_v1";
+function loadProgress(){
+  return lsGet(PROGRESS_KEY, { sessions:0, minutes:0, topics:0, voice:0, twisters:0 });
+}
+function saveProgress(p){ lsSet(PROGRESS_KEY, p); }
+function bumpProgress(patch){
+  var p = loadProgress();
+  Object.keys(patch).forEach(function(k){ p[k] = (p[k]||0) + patch[k]; });
+  saveProgress(p);
+  renderProgress();
+}
+function renderProgress(){
+  var p = loadProgress();
+  var grid = document.getElementById("progressGrid");
+  var stats = [
+    { n:p.sessions||0, l:"Sessions completed" },
+    { n:p.minutes||0, l:"Minutes practiced" },
+    { n:p.topics||0, l:"Topics completed" },
+    { n:p.voice||0, l:"Voice exercises done" }
+  ];
+  grid.innerHTML = stats.map(function(s){
+    return '<div class="progress-stat"><div class="progress-num">'+s.n+'</div><div class="progress-label">'+s.l+'</div></div>';
+  }).join("");
+}
+
+/* ============================================================
+   NAVIGATION (SPA)
+   ============================================================ */
+var PAGES = ["home","voice","twisters","channels"];
+function showPage(name, opts){
+  opts = opts || {};
+  if(PAGES.indexOf(name) === -1) name = "home";
+  PAGES.forEach(function(p){
+    var el = document.getElementById("page-"+p);
+    if(el) el.classList.toggle("is-active", p===name);
+  });
+  document.querySelectorAll("[data-nav]").forEach(function(btn){
+    btn.classList.toggle("is-current", btn.getAttribute("data-nav")===name);
+  });
+  closeMobileMenu();
+  if(!opts.skipHistory){
+    try{ history.pushState({page:name}, "", "#"+name); }catch(e){}
+  }
+  if(opts.scrollToId){
+    requestAnimationFrame(function(){
+      safeScrollIntoView(document.getElementById(opts.scrollToId), {behavior:"smooth", block:"start"});
+    });
+  } else {
+    try{ window.scrollTo({top:0, behavior:"instant"}); }catch(e){ try{ window.scrollTo(0,0); }catch(e2){} }
+  }
+}
+window.addEventListener("popstate", function(e){
+  var page = (e.state && e.state.page) || (location.hash||"#home").slice(1);
+  showPage(page, {skipHistory:true});
+});
+
+function closeMobileMenu(){
+  document.getElementById("mobileMenu").classList.remove("is-open");
+  document.getElementById("menuBtn").setAttribute("aria-expanded","false");
+}
+
+document.addEventListener("click", function(e){
+  var navBtn = e.target.closest("[data-nav]");
+  if(navBtn){
+    var target = navBtn.getAttribute("data-nav");
+    var scrollId = navBtn.getAttribute("data-scroll");
+    showPage(target, scrollId ? {scrollToId:scrollId} : {});
+  }
+  var scrollBtn = e.target.closest("[data-scroll]");
+  if(scrollBtn && !scrollBtn.hasAttribute("data-nav")){
+    safeScrollIntoView(document.getElementById(scrollBtn.getAttribute("data-scroll")), {behavior:"smooth", block:"start"});
+  }
+});
+
+document.getElementById("menuBtn").addEventListener("click", function(){
+  var menu = document.getElementById("mobileMenu");
+  var open = menu.classList.toggle("is-open");
+  this.setAttribute("aria-expanded", open ? "true":"false");
+});
+
+/* ============================================================
+   THEME
+   ============================================================ */
+var THEME_KEY = "cadence_theme";
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme==="studio" ? "studio" : "");
+  var sun = document.getElementById("themeIconSun");
+  if(theme==="studio"){
+    sun.innerHTML = '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.4 5.4 0 0 1 12 3z"/>';
+  } else {
+    sun.innerHTML = '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2 2M17.8 17.8l2 2M2 12h3M19 12h3M4.2 19.8l2-2M17.8 6.2l2-2"/>';
+  }
+}
+function initTheme(){
+  var saved = lsGet(THEME_KEY, null);
+  var theme;
+  if(saved === "studio" || saved === "paper"){ theme = saved; }
+  else { theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "studio" : "paper"; }
+  applyTheme(theme);
+}
+document.getElementById("themeToggle").addEventListener("click", function(){
+  var current = document.documentElement.getAttribute("data-theme")==="studio" ? "studio":"paper";
+  var next = current==="studio" ? "paper" : "studio";
+  applyTheme(next);
+  lsSet(THEME_KEY, next);
+});
+
+/* ============================================================
+   WHEEL
+   ============================================================ */
+var isSpinning = false;
+var currentRotation = 0;
+
+function drawDial(){
+  var svg = document.getElementById("dialSvg");
+  var n = CATEGORIES.length;
+  var slice = 360/n;
+  var cx=100, cy=100, r=98;
+  var paths = "";
+  for(var i=0;i<n;i++){
+    var startAngle = i*slice - 90;
+    var endAngle = startAngle + slice;
+    var x1 = cx + r*Math.cos(startAngle*Math.PI/180);
+    var y1 = cy + r*Math.sin(startAngle*Math.PI/180);
+    var x2 = cx + r*Math.cos(endAngle*Math.PI/180);
+    var y2 = cy + r*Math.sin(endAngle*Math.PI/180);
+    var fill = (i%2===0) ? CATEGORIES[i].color1 : CATEGORIES[i].color2;
+    paths += '<path d="M'+cx+','+cy+' L'+x1.toFixed(2)+','+y1.toFixed(2)+' A'+r+','+r+' 0 0 1 '+x2.toFixed(2)+','+y2.toFixed(2)+' Z" fill="'+fill+'" stroke="var(--paper)" stroke-width="1.5"></path>';
+  }
+  svg.innerHTML = paths;
+
+  // ring labels
+  var labelsHost = document.getElementById("dialLabels");
+  var labelHtml = "";
+  for(var j=0;j<n;j++){
+    var midAngle = (j*slice + slice/2) - 90;
+    var lx = 50 + 44*Math.cos(midAngle*Math.PI/180);
+    var ly = 50 + 44*Math.sin(midAngle*Math.PI/180);
+    labelHtml += '<span style="left:'+lx.toFixed(2)+'%; top:'+ly.toFixed(2)+'%;">'+CATEGORIES[j].label+'</span>';
+  }
+  labelsHost.innerHTML = labelHtml;
+
+  // legend
+  var legend = document.getElementById("wheelLegend");
+  legend.innerHTML = CATEGORIES.map(function(c,idx){
+    var swatch = (idx%2===0)?c.color1:c.color2;
+    return '<span class="wheel-legend-item"><span class="wheel-legend-swatch" style="background:'+swatch+'"></span>'+c.label+'</span>';
+  }).join("");
+}
+
+var pendingResult = null;
+
+function spinWheel(){
+  if(isSpinning) return;
+  isSpinning = true;
+  document.getElementById("spinBtn").disabled = true;
+
+  var n = CATEGORIES.length;
+  var slice = 360/n;
+  var targetIndex = Math.floor(Math.random()*n);
+  // pointer sits at top (angle 0 == 12 o'clock). Segment i center is at i*slice + slice/2 (measuring from top, clockwise),
+  // matching the -90deg offset used when drawing (so segment 0 starts at top).
+  var segmentCenterFromTop = targetIndex*slice + slice/2;
+  var extraSpins = 4 + Math.floor(Math.random()*2); // 4-5 full turns
+  // we rotate the disc so that the target segment's center lands under the pointer (top).
+  var finalRotation = extraSpins*360 + (360 - segmentCenterFromTop);
+  currentRotation += finalRotation;
+
+  var face = document.getElementById("dialFace");
+  face.style.transform = "rotate("+currentRotation+"deg)";
+
+  var category = CATEGORIES[targetIndex];
+  var topic = pickAvoidingRecent(
+    TOPICS.filter(function(t){ return t.c===category.id; }),
+    "cadence_recent_topics",
+    function(t){ return t.id; }
+  );
+  var challenge = CHALLENGES[Math.floor(Math.random()*CHALLENGES.length)];
+  pendingResult = { topic:topic, challenge:challenge, categoryLabel:category.label };
+
+  setTimeout(function(){
+    isSpinning = false;
+    document.getElementById("spinBtn").disabled = false;
+    showWheelResult(pendingResult);
+  }, 3700);
+}
+
+function showWheelResult(result){
+  document.getElementById("resultPanel").classList.add("is-visible");
+  document.getElementById("resultTopic").textContent = "\u201C"+result.topic.t+"\u201D";
+  document.getElementById("resultChallenge").innerHTML = "<b>Challenge —</b> "+result.challenge;
+  safeScrollIntoView(document.getElementById("resultPanel"), {behavior:"smooth", block:"nearest"});
+}
+
+document.getElementById("spinBtn").addEventListener("click", spinWheel);
+document.getElementById("spinAgainBtn").addEventListener("click", spinWheel);
+document.getElementById("startChallengeBtn").addEventListener("click", function(){
+  if(!pendingResult) return;
+  openSession({
+    phases:[{label:"Speak", seconds:DEFAULT_TOPIC_SECONDS}],
+    topicText: pendingResult.topic.t,
+    challengeText: pendingResult.challenge,
+    onComplete: function(){ bumpProgress({sessions:1, minutes:Math.round(DEFAULT_TOPIC_SECONDS/60), topics:1}); }
+  });
+});
+
+/* ============================================================
+   QUICK PRACTICE MODES
+   ============================================================ */
+var MODES = [
+  { name:"Random topic", desc:"Speak without preparation.", run:function(){
+      var topic = pickAvoidingRecent(TOPICS, "cadence_recent_topics", function(t){return t.id;});
+      openSession({ phases:[{label:"Speak", seconds:180}], topicText:topic.t, challengeText:"Speak for 3 minutes without stopping.",
+        onComplete:function(){ bumpProgress({sessions:1, minutes:3, topics:1}); } });
+  }},
+  { name:"Quick question", desc:"Answer immediately.", run:function(){
+      var q = QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
+      openSession({ phases:[{label:"Think", seconds:30},{label:"Speak", seconds:120}], topicText:q,
+        challengeText:"You get 30 seconds to think, then 2 minutes to answer out loud.",
+        onComplete:function(){ bumpProgress({sessions:1, minutes:2.5, topics:1}); } });
+  }},
+  { name:"No-filler challenge", desc:"Speak without filler words.", run:function(){ startFillerChallenge(); } },
+  { name:"Story mode", desc:"Create a story from a prompt.", run:function(){
+      var pool = TOPICS.filter(function(t){return t.c==="story";});
+      var topic = pickAvoidingRecent(pool, "cadence_recent_topics", function(t){return t.id;});
+      openSession({ phases:[{label:"Speak", seconds:180}], topicText:topic.t, challengeText:"Tell it like a story: a beginning, a middle and an end.",
+        onComplete:function(){ bumpProgress({sessions:1, minutes:3, topics:1}); } });
+  }},
+  { name:"Explain it", desc:"Explain a complicated idea simply.", run:function(){
+      var pool = TOPICS.filter(function(t){return t.c==="explain";});
+      var topic = pickAvoidingRecent(pool, "cadence_recent_topics", function(t){return t.id;});
+      openSession({ phases:[{label:"Speak", seconds:150}], topicText:topic.t, challengeText:"Explain it so clearly a stranger could repeat it back.",
+        onComplete:function(){ bumpProgress({sessions:1, minutes:2.5, topics:1}); } });
+  }}
+];
+function renderModes(){
+  var grid = document.getElementById("modeGrid");
+  grid.innerHTML = MODES.map(function(m,i){
+    return '<button class="mode-card" data-mode-idx="'+i+'"><span class="mode-name">'+m.name+'</span><span class="mode-desc">'+m.desc+'</span><span class="mode-tick">Start →</span></button>';
+  }).join("");
+  grid.querySelectorAll("[data-mode-idx]").forEach(function(btn){
+    btn.addEventListener("click", function(){ MODES[+btn.getAttribute("data-mode-idx")].run(); });
+  });
+}
+
+function startFillerChallenge(){
+  openSession({
+    phases:[{label:"No filler challenge", seconds:120}],
+    topicText:"Speak for 2 minutes without saying um, uh, like, basically, you know, sort of, or actually.",
+    challengeText:"Pick anything to talk about — a hobby, your day, an opinion. Judge yourself honestly, or ask someone to listen.",
+    onComplete:function(){ bumpProgress({sessions:1, minutes:2}); }
+  });
+}
+document.getElementById("fillerStartBtn").addEventListener("click", startFillerChallenge);
+
+/* ============================================================
+   SESSION OVERLAY (generalized, phase-based)
+   ============================================================ */
+var session = {
+  phases: [],
+  phaseIndex: 0,
+  remaining: 0,
+  total: 0,
+  timerId: null,
+  running: false,
+  onComplete: null
+};
+
+function openSession(cfg){
+  session.phases = cfg.phases;
+  session.phaseIndex = 0;
+  session.onComplete = cfg.onComplete || null;
+  document.getElementById("sessionTopic").textContent = cfg.topicText;
+  document.getElementById("sessionChallenge").textContent = cfg.challengeText || "";
+  document.getElementById("sessionMain").style.display = "";
+  document.getElementById("sessionDone").classList.remove("is-visible");
+  document.getElementById("sessionOverlay").classList.add("is-open");
+  setupPhase();
+}
+function setupPhase(){
+  clearSessionTimer();
+  var phase = session.phases[session.phaseIndex];
+  session.remaining = phase.seconds;
+  session.total = phase.seconds;
+  session.running = false;
+  document.getElementById("sessionPhaseLabel").textContent = phase.label;
+  renderSessionClock();
+  document.getElementById("sessionStartBtn").style.display = "";
+  document.getElementById("sessionStartBtn").textContent = "Start";
+  document.getElementById("sessionPauseBtn").style.display = "none";
+  document.getElementById("sessionFinishBtn").style.display = "none";
+}
+function renderSessionClock(){
+  var m = Math.floor(session.remaining/60);
+  var s = session.remaining%60;
+  document.getElementById("sessionClock").textContent = (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+  var ticksHost = document.getElementById("sessionTicks");
+  var totalTicks = 20;
+  var filled = Math.round(totalTicks * (1 - session.remaining/session.total));
+  var html = "";
+  for(var i=0;i<totalTicks;i++){ html += '<span'+(i<filled?' class="is-filled"':'')+'></span>'; }
+  ticksHost.innerHTML = html;
+}
+function clearSessionTimer(){
+  if(session.timerId){ clearInterval(session.timerId); session.timerId = null; }
+}
+function startSessionTimer(){
+  if(session.running) return;
+  session.running = true;
+  document.getElementById("sessionStartBtn").style.display = "none";
+  document.getElementById("sessionPauseBtn").style.display = "";
+  document.getElementById("sessionFinishBtn").style.display = "";
+  clearSessionTimer();
+  session.timerId = setInterval(function(){
+    session.remaining -= 1;
+    if(session.remaining <= 0){
+      session.remaining = 0;
+      renderSessionClock();
+      clearSessionTimer();
+      advanceSessionPhase();
+      return;
+    }
+    renderSessionClock();
+  }, 1000);
+}
+function pauseSessionTimer(){
+  session.running = false;
+  clearSessionTimer();
+  document.getElementById("sessionStartBtn").style.display = "";
+  document.getElementById("sessionStartBtn").textContent = "Resume";
+  document.getElementById("sessionPauseBtn").style.display = "none";
+}
+function advanceSessionPhase(){
+  session.phaseIndex += 1;
+  if(session.phaseIndex >= session.phases.length){
+    finishSession();
+  } else {
+    setupPhase();
+    startSessionTimer();
+  }
+}
+function finishSession(){
+  document.getElementById("sessionMain").style.display = "none";
+  document.getElementById("sessionDone").classList.add("is-visible");
+  if(typeof session.onComplete === "function") session.onComplete();
+}
+function closeSessionOverlay(){
+  clearSessionTimer();
+  session.running = false;
+  document.getElementById("sessionOverlay").classList.remove("is-open");
+}
+document.getElementById("sessionStartBtn").addEventListener("click", startSessionTimer);
+document.getElementById("sessionPauseBtn").addEventListener("click", pauseSessionTimer);
+document.getElementById("sessionFinishBtn").addEventListener("click", finishSession);
+document.getElementById("sessionCloseBtn").addEventListener("click", closeSessionOverlay);
+document.getElementById("sessionBackBtn").addEventListener("click", closeSessionOverlay);
+document.getElementById("sessionAgainBtn").addEventListener("click", function(){
+  closeSessionOverlay();
+  spinWheel();
+});
+
+/* ============================================================
+   VOICE EXERCISE PAGE
+   ============================================================ */
+var exerciseTimers = {}; // id -> {remaining,total,timerId,running}
+
+function renderVoiceGrid(){
+  var grid = document.getElementById("voiceGrid");
+  grid.innerHTML = VOICE_EXERCISES.map(renderExerciseCardHtml).join("");
+  wireExerciseCard(grid, VOICE_EXERCISES, "voice");
+}
+function renderExerciseCardHtml(ex){
+  var mm = Math.floor(ex.dur/60), ss=ex.dur%60;
+  var durLabel = ex.dur+"s";
+  return '' +
+  '<div class="exercise-card" id="card-'+ex.id+'">' +
+    '<button class="exercise-head" data-toggle="'+ex.id+'">' +
+      '<span class="exercise-sound">'+ex.sound+'</span>' +
+      '<span class="exercise-meta"><span class="exercise-dur">'+durLabel+'</span><span class="go-btn">GO</span></span>' +
+    '</button>' +
+    '<div class="exercise-body" id="body-'+ex.id+'">' +
+      '<ul class="tech-list">'+ex.tech.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>' +
+      '<p class="tiny" style="margin-top:10px;">Recommended: '+ex.reps+'.</p>' +
+      renderTimerWidgetHtml(ex.id, ex.dur) +
+    '</div>' +
+  '</div>';
+}
+function renderTimerWidgetHtml(id, dur){
+  return '' +
+  '<div class="timer-widget" data-timer-id="'+id+'">' +
+    '<div class="timer-face">' +
+      '<span class="timer-clock" data-role="clock">'+formatTime(dur)+'</span>' +
+      '<div class="timer-ticks" data-role="ticks"></div>' +
+    '</div>' +
+    '<div class="timer-controls">' +
+      '<button class="btn btn-sm btn-primary" data-action="start">Start</button>' +
+      '<button class="btn btn-sm btn-outline" data-action="pause" style="display:none;">Pause</button>' +
+      '<button class="btn btn-sm btn-outline" data-action="reset">Reset</button>' +
+    '</div>' +
+    '<p class="timer-status" data-role="status">Exercise complete. Nice work.</p>' +
+  '</div>';
+}
+function formatTime(total){
+  var m = Math.floor(total/60), s = total%60;
+  return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+}
+
+function wireExerciseCard(root, dataset, kind){
+  root.querySelectorAll("[data-toggle]").forEach(function(head){
+    head.addEventListener("click", function(){
+      var id = head.getAttribute("data-toggle");
+      var body = document.getElementById("body-"+id);
+      var wasOpen = body.classList.contains("is-open");
+      body.classList.toggle("is-open");
+      if(!wasOpen){
+        var item = dataset.filter(function(d){ return d.id===id; })[0];
+        var dur = item ? (item.dur || parseDurSeconds(item)) : 60;
+        initExerciseTimer(id, dur, kind);
+      }
+    });
+  });
+}
+function parseDurSeconds(tw){ return 45; }
+
+function initExerciseTimer(id, dur, kind){
+  if(exerciseTimers[id]) return; // already initialized
+  exerciseTimers[id] = { remaining:dur, total:dur, timerId:null, running:false, kind:kind };
+  var widget = document.querySelector('[data-timer-id="'+id+'"]');
+  if(!widget) return;
+  buildTicks(widget, dur);
+  widget.querySelector('[data-action="start"]').addEventListener("click", function(){ startExerciseTimer(id); });
+  widget.querySelector('[data-action="pause"]').addEventListener("click", function(){ pauseExerciseTimer(id); });
+  widget.querySelector('[data-action="reset"]').addEventListener("click", function(){ resetExerciseTimer(id); });
+}
+function buildTicks(widget, dur){
+  var totalTicks = Math.min(24, Math.max(8, Math.round(dur/3)));
+  var ticksHost = widget.querySelector('[data-role="ticks"]');
+  var html = "";
+  for(var i=0;i<totalTicks;i++){ html += "<span></span>"; }
+  ticksHost.innerHTML = html;
+  widget.setAttribute("data-tick-count", totalTicks);
+}
+function renderExerciseClock(id){
+  var st = exerciseTimers[id];
+  var widget = document.querySelector('[data-timer-id="'+id+'"]');
+  if(!widget || !st) return;
+  widget.querySelector('[data-role="clock"]').textContent = formatTime(st.remaining);
+  var totalTicks = +widget.getAttribute("data-tick-count");
+  var filled = Math.round(totalTicks * (1 - st.remaining/st.total));
+  var spans = widget.querySelectorAll('[data-role="ticks"] span');
+  spans.forEach(function(sp, idx){ sp.classList.toggle("is-filled", idx<filled); });
+}
+function startExerciseTimer(id){
+  var st = exerciseTimers[id];
+  if(!st || st.running) return;
+  st.running = true;
+  var widget = document.querySelector('[data-timer-id="'+id+'"]');
+  widget.querySelector('[data-action="start"]').style.display = "none";
+  widget.querySelector('[data-action="pause"]').style.display = "";
+  widget.querySelector('[data-role="status"]').classList.remove("is-visible");
+  if(st.timerId) clearInterval(st.timerId);
+  st.timerId = setInterval(function(){
+    st.remaining -= 1;
+    if(st.remaining <= 0){
+      st.remaining = 0;
+      renderExerciseClock(id);
+      clearInterval(st.timerId); st.timerId=null; st.running=false;
+      widget.querySelector('[data-action="pause"]').style.display = "none";
+      widget.querySelector('[data-action="start"]').style.display = "";
+      widget.querySelector('[data-action="start"]').textContent = "Start";
+      widget.querySelector('[data-role="status"]').classList.add("is-visible");
+      if(st.kind === "voice") bumpProgress({voice:1});
+      if(st.kind === "twister") bumpProgress({twisters:1});
+      return;
+    }
+    renderExerciseClock(id);
+  }, 1000);
+}
+function pauseExerciseTimer(id){
+  var st = exerciseTimers[id];
+  if(!st) return;
+  st.running = false;
+  if(st.timerId){ clearInterval(st.timerId); st.timerId=null; }
+  var widget = document.querySelector('[data-timer-id="'+id+'"]');
+  widget.querySelector('[data-action="pause"]').style.display = "none";
+  var startBtn = widget.querySelector('[data-action="start"]');
+  startBtn.style.display = "";
+  startBtn.textContent = "Resume";
+}
+function resetExerciseTimer(id){
+  var st = exerciseTimers[id];
+  if(!st) return;
+  if(st.timerId){ clearInterval(st.timerId); st.timerId=null; }
+  st.running = false;
+  st.remaining = st.total;
+  var widget = document.querySelector('[data-timer-id="'+id+'"]');
+  widget.querySelector('[data-action="pause"]').style.display = "none";
+  var startBtn = widget.querySelector('[data-action="start"]');
+  startBtn.style.display = "";
+  startBtn.textContent = "Start";
+  widget.querySelector('[data-role="status"]').classList.remove("is-visible");
+  renderExerciseClock(id);
+}
+
+/* ============================================================
+   TONGUE TWISTER PAGE
+   ============================================================ */
+var twisterFilter = "All";
+function twisterFilters(){
+  var targets = Array.from(new Set(TONGUE_TWISTERS.map(function(t){return t.target;})));
+  var diffs = ["Easy","Medium","Hard"];
+  return ["All"].concat(diffs).concat(targets);
+}
+function renderTwisterFilterBar(){
+  var bar = document.getElementById("twisterFilterBar");
+  var opts = twisterFilters();
+  bar.innerHTML = opts.map(function(o){
+    return '<button class="filter-chip'+(o===twisterFilter?' is-active':'')+'" data-filter="'+o+'">'+o+'</button>';
+  }).join("");
+  bar.querySelectorAll("[data-filter]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      twisterFilter = btn.getAttribute("data-filter");
+      renderTwisterFilterBar();
+      renderTwisterGrid();
+    });
+  });
+}
+function renderTwisterGrid(){
+  var grid = document.getElementById("twisterGrid");
+  var list = TONGUE_TWISTERS.filter(function(t){
+    if(twisterFilter === "All") return true;
+    return t.target === twisterFilter || t.diff === twisterFilter;
+  });
+  grid.innerHTML = list.map(renderTwisterCardHtml).join("") || '<p class="tiny">No tongue twisters match that filter yet.</p>';
+  wireTwisterCards(grid);
+}
+function renderTwisterCardHtml(tw, i){
+  var num = (i+1) < 10 ? "0"+(i+1) : (i+1);
+  return '' +
+  '<div class="exercise-card twister-card" id="card-'+tw.id+'">' +
+    '<button class="exercise-head" data-reveal="'+tw.id+'">' +
+      '<span><span class="exercise-sound">Tongue twister #'+num+'</span><br><span class="twister-hint">Challenges your '+tw.target+' sounds</span></span>' +
+      '<span class="go-btn">GO</span>' +
+    '</button>' +
+    '<div class="exercise-body" id="body-'+tw.id+'">' +
+      '<p class="twister-hidden-text">\u201C'+tw.t+'\u201D</p>' +
+      '<div class="twister-tags"><span>Target: '+tw.target+'</span><span>'+tw.diff+'</span></div>' +
+      '<p class="tiny" style="margin-top:10px;">Repeat 5 times slowly, then 5 times quickly.</p>' +
+      renderTimerWidgetHtml(tw.id, 40) +
+    '</div>' +
+  '</div>';
+}
+function wireTwisterCards(grid){
+  grid.querySelectorAll("[data-reveal]").forEach(function(head){
+    head.addEventListener("click", function(){
+      var id = head.getAttribute("data-reveal");
+      var body = document.getElementById("body-"+id);
+      var wasOpen = body.classList.contains("is-open");
+      body.classList.toggle("is-open");
+      if(!wasOpen) initExerciseTimer(id, 40, "twister");
+    });
+  });
+}
+
+/* ============================================================
+   CHANNELS
+   ============================================================ */
+function channelCardHtml(ch){
+  return '' +
+  '<div class="channel-card">' +
+    '<div class="channel-top"><span class="channel-name">'+ch.name+'</span><span class="channel-cat">'+ch.cat+'</span></div>' +
+    '<p class="channel-desc">'+ch.desc+'</p>' +
+    '<p class="channel-why">'+ch.why+'</p>' +
+    '<a class="channel-link" href="'+ch.url+'" target="_blank" rel="noopener noreferrer">Visit channel <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></a>' +
+  '</div>';
+}
+function renderChannelGrids(){
+  document.getElementById("channelPreviewGrid").innerHTML = CHANNELS.slice(0,6).map(channelCardHtml).join("");
+  document.getElementById("channelFullGrid").innerHTML = CHANNELS.map(channelCardHtml).join("");
+}
+
+/* ============================================================
+   HOME PREVIEW LISTS (voice / twisters mini)
+   ============================================================ */
+function renderMiniPreviews(){
+  var voiceHost = document.getElementById("voicePreviewList");
+  voiceHost.innerHTML = VOICE_EXERCISES.slice(0,4).map(function(v){
+    return '<div class="mini-card"><div><div class="mini-card-title">'+v.sound+'</div><div class="mini-card-sub">'+v.dur+' seconds &middot; '+v.reps+'</div></div></div>';
+  }).join("");
+
+  var twisterHost = document.getElementById("twisterPreviewList");
+  var sample = TONGUE_TWISTERS.slice(0,4);
+  twisterHost.innerHTML = sample.map(function(t,i){
+    return '<div class="mini-card"><div><div class="mini-card-title">Twister #0'+(i+1)+'</div><div class="mini-card-sub">Target: '+t.target+' &middot; '+t.diff+'</div></div></div>';
+  }).join("");
+}
+
+/* ============================================================
+   DAILY PRACTICE
+   ============================================================ */
+function renderDailyPractice(){
+  var seed = seedFromString(dayKey());
+  var voice = seededPick(VOICE_EXERCISES, seed);
+  var twister = seededPick(TONGUE_TWISTERS, seed+1);
+  var topic = seededPick(TOPICS, seed+2);
+  var order = seed % 2 === 0
+    ? [
+        {name:"Voice warm-up — "+voice.sound, time:"2 min", action:function(){ showPage("voice"); } },
+        {name:"Tongue twister practice", time:"3 min", action:function(){ showPage("twisters"); } },
+        {name:"Random topic: \u201C"+topic.t+"\u201D", time:"5 min", action:function(){
+            openSession({phases:[{label:"Speak", seconds:180}], topicText:topic.t, challengeText:"Speak for 3 minutes without stopping.",
+              onComplete:function(){ bumpProgress({sessions:1, minutes:3, topics:1}); }});
+        }},
+        {name:"Fluency challenge — no filler words", time:"2 min", action:startFillerChallenge}
+      ]
+    : [
+        {name:"Tongue twister practice", time:"3 min", action:function(){ showPage("twisters"); } },
+        {name:"Voice warm-up — "+voice.sound, time:"2 min", action:function(){ showPage("voice"); } },
+        {name:"Fluency challenge — no filler words", time:"2 min", action:startFillerChallenge},
+        {name:"Random topic: \u201C"+topic.t+"\u201D", time:"5 min", action:function(){
+            openSession({phases:[{label:"Speak", seconds:180}], topicText:topic.t, challengeText:"Speak for 3 minutes without stopping.",
+              onComplete:function(){ bumpProgress({sessions:1, minutes:3, topics:1}); }});
+        }}
+      ];
+  var list = document.getElementById("dailyList");
+  list.innerHTML = order.map(function(item,i){
+    return '<li class="daily-item"><span class="daily-num">'+(i+1)+'</span><div class="daily-body"><div class="daily-name">'+item.name+'</div><div class="daily-time">'+item.time+'</div></div></li>';
+  }).join("");
+  list.querySelectorAll(".daily-item").forEach(function(li, idx){
+    li.style.cursor = "pointer";
+    li.addEventListener("click", function(){ order[idx].action(); });
+  });
+  document.getElementById("dailyDateLabel").textContent = "Today's practice \u00b7 " + new Date().toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'});
+}
+
+/* ============================================================
+   WORD OF THE DAY
+   ============================================================ */
+function renderWordOfDay(){
+  var seed = seedFromString(dayKey()+"-word");
+  var word = seededPick(WORDS, seed);
+  document.getElementById("wordCard").innerHTML =
+    '<div class="word-headline">'+word.w+'</div>' +
+    '<p class="word-meaning">'+word.m+'</p>' +
+    '<p class="word-example">\u201C'+word.ex+'\u201D</p>' +
+    '<p class="word-challenge"><b>Challenge —</b> '+word.ch+'</p>';
+}
+
+/* ============================================================
+   LEGAL PANEL
+   ============================================================ */
+var LEGAL_CONTENT = {
+  privacy: { title:"Privacy", body:"Cadence doesn't require an account and doesn't collect personal information. Progress — sessions, minutes, topics and exercises completed — is stored only in your browser's local storage, on this device. Clearing your browser data or using the reset button removes it. Nothing is sent to a server." },
+  terms: { title:"Terms", body:"Cadence is a practice tool provided as-is, for personal use. It doesn't provide medical, therapeutic or speech-pathology advice. If you have a persistent voice concern, please talk to a qualified professional rather than relying on this tool." }
+};
+function openLegal(key){
+  var content = LEGAL_CONTENT[key];
+  document.getElementById("legalTitle").textContent = content.title;
+  document.getElementById("legalBody").innerHTML = "<p>"+content.body+"</p>";
+  document.getElementById("legalPanel").classList.add("is-open");
+}
+document.getElementById("privacyLink").addEventListener("click", function(){ openLegal("privacy"); });
+document.getElementById("termsLink").addEventListener("click", function(){ openLegal("terms"); });
+document.getElementById("legalCloseBtn").addEventListener("click", function(){ document.getElementById("legalPanel").classList.remove("is-open"); });
+document.getElementById("legalPanel").addEventListener("click", function(e){
+  if(e.target.id === "legalPanel") document.getElementById("legalPanel").classList.remove("is-open");
+});
+
+/* ============================================================
+   RESET PROGRESS
+   ============================================================ */
+document.getElementById("resetProgressBtn").addEventListener("click", function(){
+  if(window.confirm("Clear your local practice progress? This can't be undone.")){
+    lsRemoveAll([PROGRESS_KEY, "cadence_recent_topics"]);
+    renderProgress();
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init(){
+  initTheme();
+  drawDial();
+  renderModes();
+  renderMiniPreviews();
+  renderDailyPractice();
+  renderWordOfDay();
+  renderChannelGrids();
+  renderVoiceGrid();
+  renderTwisterFilterBar();
+  renderTwisterGrid();
+  renderProgress();
+
+  var startHash = (location.hash||"#home").slice(1);
+  showPage(PAGES.indexOf(startHash)!==-1 ? startHash : "home", {skipHistory:true});
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+
+})();
+</script>
+</body>
+</html>
